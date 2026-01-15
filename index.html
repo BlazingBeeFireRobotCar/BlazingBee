@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fire Robot Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      text-align: center;
+    }
+    .card {
+      background: #222;
+      padding: 15px;
+      margin: 10px;
+      border-radius: 10px;
+    }
+    .on { color: lime; }
+    .off { color: red; }
+  </style>
+</head>
+
+<body>
+  <h2>🔥 Fire Extinguisher Robot Car 🔥</h2>
+
+  <div class="card">🌡 Temperature: <span id="temp">--</span> °C</div>
+  <div class="card">💧 Humidity: <span id="hum">--</span> %</div>
+  <div class="card">💨 Gas: <span id="gas">--</span></div>
+  <div class="card">🚰 Pump: <span id="pump">--</span></div>
+  <div class="card">🚨 Pump: <span id="flameL">--</span></div> 
+  <div class="card">🚨 Pump: <span id="flameM">--</span></div>
+  <div class="card">🚨 Pump: <span id="flameR">--</span></div>
+
+<script>
+const token = "stt741BpsULZDZYNOw-65khrw2WbnW0I";
+const base = "https://sgp1.blynk.cloud/external/api/get?token=" + token;
+
+function updateData(){
+  fetch(base + "&v6").then(r=>r.text()).then(t=>document.getElementById("temp").innerHTML=t);
+  fetch(base + "&v7").then(r=>r.text()).then(t=>document.getElementById("hum").innerHTML=t);
+  fetch(base + "&v8").then(r=>r.text()).then(t=>document.getElementById("gas").innerHTML=t);
+  fetch(base + "&v12").then(r=>r.text()).then(v=>{
+    document.getElementById("pump").innerHTML = (v=="1")
+      ? "<span class='on'>ON</span>"
+      : "<span class='off'>OFF</span>";
+  });
+}
+
+setInterval(updateData, 2000);
+updateData();
+</script>
+</body>
+</html>
