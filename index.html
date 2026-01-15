@@ -16,9 +16,19 @@
       padding: 15px;
       margin: 10px;
       border-radius: 10px;
+      font-size: 1.2em;
     }
-    .on { color: lime; }
-    .off { color: red; }
+    .indicator {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-left: 10px;
+    }
+    .pump-on { background: lime; }
+    .pump-off { background: white; }
+    .flame-on { background: red; }
+    .flame-off { background: lime; }
   </style>
 </head>
 
@@ -28,10 +38,18 @@
   <div class="card">🌡 Temperature: <span id="temp">--</span> °C</div>
   <div class="card">💧 Humidity: <span id="hum">--</span> %</div>
   <div class="card">💨 Gas: <span id="gas">--</span></div>
-  <div class="card">🚰 Pump: <span id="pump">--</span></div>
-  <div class="card">🚨 Left Flame Sensor: <span id="flameL">--</span></div>
-  <div class="card">🚨 Middle Flame Sensor: <span id="flameM">--</span></div>
-  <div class="card">🚨 Right Flame Sensor: <span id="flameR">--</span></div>
+  <div class="card">🚰 Pump: <span id="pump">--</span>
+    <span id="pumpIndicator" class="indicator pump-off"></span>
+  </div>
+  <div class="card">🚨 Flame Left: <span id="flameL">--</span>
+    <span id="flameLIndicator" class="indicator flame-off"></span>
+  </div>
+  <div class="card">🚨 Flame Middle: <span id="flameM">--</span>
+    <span id="flameMIndicator" class="indicator flame-off"></span>
+  </div>
+  <div class="card">🚨 Flame Right: <span id="flameR">--</span>
+    <span id="flameRIndicator" class="indicator flame-off"></span>
+  </div>
 
 <script>
 const token = "stt741BpsULZDZYNOw-65khrw2WbnW0I";
@@ -46,32 +64,40 @@ function updateData(){
   fetch(base + "&v8").then(r=>r.text()).then(t=>document.getElementById("gas").innerHTML=t);
   // Pump
   fetch(base + "&v12").then(r=>r.text()).then(v=>{
-    document.getElementById("pump").innerHTML = (v=="1")
-      ? "<span class='on'>ON</span>"
-      : "<span class='off'>OFF</span>";
+    const pumpText = (v=="1") ? "ON" : "OFF";
+    const pumpIndicator = document.getElementById("pumpIndicator");
+    document.getElementById("pump").innerHTML = pumpText + " ";
+    document.getElementById("pump").appendChild(pumpIndicator);
+    if(v=="1"){
+      pumpIndicator.className = "indicator pump-on";
+    } else {
+      pumpIndicator.className = "indicator pump-off";
+    }
   });
   // Flame Sensors
   fetch(base + "&v9").then(r=>r.text()).then(v=>{
-    document.getElementById("flameL").innerHTML = (v=="1")
-      ? "<span class='on'>DETECTED</span>"
-      : "<span class='off'>SAFE</span>";
+    const flameIndicator = document.getElementById("flameLIndicator");
+    document.getElementById("flameL").innerHTML = (v=="1") ? "FIRE DETECTED " : "SAFE ";
+    document.getElementById("flameL").appendChild(flameIndicator);
+    flameIndicator.className = (v=="1") ? "indicator flame-on" : "indicator flame-off";
   });
   fetch(base + "&v10").then(r=>r.text()).then(v=>{
-    document.getElementById("flameM").innerHTML = (v=="1")
-      ? "<span class='on'>DETECTED</span>"
-      : "<span class='off'>SAFE</span>";
+    const flameIndicator = document.getElementById("flameMIndicator");
+    document.getElementById("flameM").innerHTML = (v=="1") ? "FIRE DETECTED " : "SAFE ";
+    document.getElementById("flameM").appendChild(flameIndicator);
+    flameIndicator.className = (v=="1") ? "indicator flame-on" : "indicator flame-off";
   });
   fetch(base + "&v11").then(r=>r.text()).then(v=>{
-    document.getElementById("flameR").innerHTML = (v=="1")
-      ? "<span class='on'>DETECTED</span>"
-      : "<span class='off'>SAFE</span>";
+    const flameIndicator = document.getElementById("flameRIndicator");
+    document.getElementById("flameR").innerHTML = (v=="1") ? "FIRE DETECTED " : "SAFE ";
+    document.getElementById("flameR").appendChild(flameIndicator);
+    flameIndicator.className = (v=="1") ? "indicator flame-on" : "indicator flame-off";
   });
 }
 
-
+// Update every 2 seconds
 setInterval(updateData, 2000);
 updateData();
 </script>
 </body>
-
 </html>
